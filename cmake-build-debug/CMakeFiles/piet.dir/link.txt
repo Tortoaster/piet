@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/piet.dir/main.cpp.o  -o piet 
