@@ -1,0 +1,46 @@
+before: tacocat7
+loop {
+	duplicate: tacocat77
+	duplicate: tacocat777
+	push 2: tacocat7772
+	add: tacocat779
+	push 1: tacocat7791
+	roll: 7tacocat7
+
+	push 1: 7tacocat71
+	add: 7tacocat8
+	duplicate: 7tacocat88e
+	push 2: 7tacocat882
+	subtract: 7tacocat86
+	roll: acocat7t
+	push 2: acocat7t2
+	push 1: acocat7t21
+	roll: acocatt7
+	push 3: acocatt73
+	push 1: acocatt731
+	roll: acoca7tt
+	subtract: acoca70
+	not: acoca71
+	not: acoca70
+	pointer: acoca7 (re-enter loop, otherwise output 0 and terminate)
+	push 2: acoca72
+	subtract: acoca5
+	
+	// Check if there is 1 character left
+	duplicate: acoca55
+	push 1: acoca551
+	subtract: acoca54
+	not: acoca50
+	not?: acoca51
+	pointer: acoca5 (exit loop if true)
+	
+	// Check if there are 0 characters left
+	duplicate: acoca55
+	not: acoca50
+	not?: acoca51
+	pointer: acoca5 (exit loop if true)
+}
+after: o1
+out 1: o1
+[terminate]
+
