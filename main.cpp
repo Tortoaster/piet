@@ -17,11 +17,11 @@ struct color {
 struct block {
     color color;
     unsigned long size;
-    struct block* neighbors[8];
+    struct block ** neighbors;
 };
 
 struct state {
-    block current;
+    block current{};
     std::stack<int> stack;
     direction dp = RIGHT;
     chooser cc = LEFTMOST;
@@ -126,14 +126,14 @@ void pointer(state & state) {
     int a = state.stack.top();
     state.stack.pop();
 
-    state.dp = static_cast<direction>(state.dp + a % 4);
+    state.dp = static_cast<direction>((state.dp + a) % 4);
 }
 
 void switchh(state & state) {
     int a = state.stack.top();
     state.stack.pop();
 
-    state.cc = static_cast<chooser>(state.cc + a % 4);
+    state.cc = static_cast<chooser>((state.cc + a) % 4);
 }
 
 void duplicate(state & state) {
@@ -151,11 +151,23 @@ void roll(state & state) {
     int b = state.stack.top();
     state.stack.pop();
 
+    std::stack<int> temp;
+
     for(int i = 0; i < a; i++) {
         int n = state.stack.top();
         state.stack.pop();
 
-        // Should probably finish this function
+        for(int ii = 0; ii < b - 1; ii++) {
+            temp.push(state.stack.top());
+            state.stack.pop();
+        }
+
+        state.stack.push(n);
+
+        while(!temp.empty()) {
+            state.stack.push(temp.top());
+            temp.pop();
+        }
     }
 }
 
@@ -207,8 +219,8 @@ void next_state(state & state) {
 
     if(next.color.hue == NONE && next.color.lightness == DARK) {    // Bumped into black block
         state.tries++;
-        if((state.tries & 1) == 0) state.dp = static_cast<direction>(state.dp + 1 % 4);
-        state.cc = static_cast<chooser>(state.cc + 1 % 2);
+        if((state.tries & 1u) == 0) state.dp = static_cast<direction>((state.dp + 1) % 4);
+        state.cc = static_cast<chooser>((state.cc + 1) % 2);
     } else {
         get_command(state.current, next) (state);       // Perform operation associated with the color transition
         state.current = next;
@@ -294,11 +306,11 @@ block find_blocks(const std::string &image) {
         }
     }
 
-    // Find neighboring blocks
+    // Assign neighbors to all blocks
 
     for(auto block : blocks) {
 
-        struct block (& neighbors)[8];
+        struct block * neighbors[8];
 
         std::vector<position> positions = blockToPos[block];
 
@@ -332,14 +344,16 @@ block find_blocks(const std::string &image) {
             }
         }
 
-        neighbors[0] = posToBlock.at(*std::min_element(right.begin(), right.end(), & compare_y));
-        neighbors[1] = posToBlock.at(*std::max_element(right.begin(), right.end(), & compare_y));
-        neighbors[2] = posToBlock.at(*std::max_element(down.begin(), down.end(), & compare_x));
-        neighbors[3] = posToBlock.at(*std::min_element(down.begin(), down.end(), & compare_x));
-        neighbors[4] = posToBlock.at(*std::max_element(left.begin(), left.end(), & compare_y));
-        neighbors[5] = posToBlock.at(*std::min_element(left.begin(), left.end(), & compare_y));
-        neighbors[6] = posToBlock.at(*std::min_element(up.begin(), up.end(), & compare_x));
-        neighbors[7] = posToBlock.at(*std::max_element(up.begin(), up.end(), & compare_x));
+        neighbors[0] = & posToBlock.at(*std::min_element(right.begin(), right.end(), & compare_y));
+        neighbors[1] = & posToBlock.at(*std::max_element(right.begin(), right.end(), & compare_y));
+        neighbors[2] = & posToBlock.at(*std::max_element(down.begin(), down.end(), & compare_x));
+        neighbors[3] = & posToBlock.at(*std::min_element(down.begin(), down.end(), & compare_x));
+        neighbors[4] = & posToBlock.at(*std::max_element(left.begin(), left.end(), & compare_y));
+        neighbors[5] = & posToBlock.at(*std::min_element(left.begin(), left.end(), & compare_y));
+        neighbors[6] = & posToBlock.at(*std::min_element(up.begin(), up.end(), & compare_x));
+        neighbors[7] = & posToBlock.at(*std::max_element(up.begin(), up.end(), & compare_x));
+
+        block.neighbors = neighbors;
     }
 
     // Return starting block
