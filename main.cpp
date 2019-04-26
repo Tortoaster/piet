@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <stack>
 #include <vector>
+#include <cmath>
 
 // LIGHT NONE is white and DARK NONE is black, NORMAL NONE is undefined
 enum Hue {
@@ -10,14 +11,6 @@ enum Hue {
 
 enum Lightness {
 	LIGHT, NORMAL, DARK
-};
-
-enum Direction {
-	RIGHT, DOWN, LEFT, UP
-};
-
-enum Chooser {
-	LEFTMOST, RIGHTMOST
 };
 
 struct Color {
@@ -32,7 +25,6 @@ struct Position {
 
 struct Block {
 	Color color;
-	unsigned long size;
 	std::vector<Position> positions;
 	struct Block** neighbors;
 };
@@ -40,9 +32,10 @@ struct Block {
 struct State {
 	Block current;
 	std::stack<int> stack;
-	Direction dp = RIGHT;
-	Chooser cc = LEFTMOST;
-	uint8_t tries = 0;
+	short dp = 0;    // 0 is right, 1 is down, 2 is left, 3 is up
+	short cc = 0;    // 0 is left, 1 is right
+	short turned = 0;
+	bool swapped = false;
 };
 
 bool operator==(const Position& p1, const Position& p2) {
@@ -64,7 +57,7 @@ void skip(State& state) {
 }
 
 void push(State& state) {
-	state.stack.push(state.current.size);
+	state.stack.push(state.current.positions.size());
 }
 
 void pop(State& state) {
@@ -72,53 +65,53 @@ void pop(State& state) {
 }
 
 void add(State& state) {
-	int a = state.stack.top();
-	state.stack.pop();
-	
 	int b = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(b + a);
+	int a = state.stack.top();
+	state.stack.pop();
+	
+	state.stack.push(a + b);
 }
 
 void subtract(State& state) {
-	int a = state.stack.top();
-	state.stack.pop();
-	
 	int b = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(b - a);
+	int a = state.stack.top();
+	state.stack.pop();
+	
+	state.stack.push(a - b);
 }
 
 void multiply(State& state) {
-	int a = state.stack.top();
-	state.stack.pop();
-	
 	int b = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(b * a);
+	int a = state.stack.top();
+	state.stack.pop();
+	
+	state.stack.push(a * b);
 }
 
 void divide(State& state) {
-	int a = state.stack.top();
-	state.stack.pop();
-	
 	int b = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(b / a);
+	int a = state.stack.top();
+	state.stack.pop();
+	
+	state.stack.push(static_cast<int>(a / b));
 }
 
 void mod(State& state) {
-	int a = state.stack.top();
-	state.stack.pop();
-	
 	int b = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(b % a);
+	int a = state.stack.top();
+	state.stack.pop();
+	
+	state.stack.push(((a % b) + b) % b);
 }
 
 void nott(State& state) {
@@ -129,10 +122,10 @@ void nott(State& state) {
 }
 
 void greater(State& state) {
-	int a = state.stack.top();
+	int b = state.stack.top();
 	state.stack.pop();
 	
-	int b = state.stack.top();
+	int a = state.stack.top();
 	state.stack.pop();
 	
 	state.stack.push(a > b);
@@ -142,14 +135,14 @@ void pointer(State& state) {
 	int a = state.stack.top();
 	state.stack.pop();
 	
-	state.dp = static_cast<Direction>((state.dp + a) % 4);
+	state.dp = (((state.dp + a) % 4) + 4) % 4;
 }
 
 void switchh(State& state) {
 	int a = state.stack.top();
 	state.stack.pop();
 	
-	state.cc = static_cast<Chooser>((state.cc + a) % 4);
+	state.cc = (((state.cc + a) % 2) + 2) % 2;
 }
 
 void duplicate(State& state) {
@@ -161,19 +154,19 @@ void duplicate(State& state) {
 }
 
 void roll(State& state) {
-	int a = state.stack.top();
+	int b = state.stack.top();
 	state.stack.pop();
 	
-	int b = state.stack.top();
+	int a = state.stack.top();
 	state.stack.pop();
 	
 	std::stack<int> temp;
 	
-	for(int i = 0; i < a; i++) {
+	for(int i = 0; i < b; i++) {
 		int n = state.stack.top();
 		state.stack.pop();
 		
-		for(int ii = 0; ii < b - 1; ii++) {
+		for(int ii = 0; ii < a - 1; ii++) {
 			temp.push(state.stack.top());
 			state.stack.pop();
 		}
@@ -227,22 +220,25 @@ command get_command(const Block& from, const Block& to) {
 		return skip;
 	}
 	
-	short hue_change = to.color.hue - from.color.hue + 6 % 6;
-	short lightness_change = to.color.lightness - from.color.lightness + 3 % 3;
+	short hue_change = (to.color.hue - from.color.hue + 6) % 6;
+	short lightness_change = (to.color.lightness - from.color.lightness + 3) % 3;
 	
 	return commands[hue_change][lightness_change];
 }
 
 void next_state(State& state) {
-	Block next = *state.current.neighbors[state.dp * 4 + state.cc];
+	Block next = (*state.current.neighbors)[state.dp * 2 + state.cc];
 	
 	if(next.color.hue == NONE && next.color.lightness == DARK) {
-		// Bumped into black Block
-		state.tries++;
-		if((state.tries & 1u) == 0) state.dp = static_cast<Direction>((state.dp + 1) % 4);
-		state.cc = static_cast<Chooser>((state.cc + 1) % 2);
+		// Bumped into black block or fell off the edge
+		if(state.swapped) {
+			state.dp = (state.dp + 1) % 4;
+		}
+		state.cc = (state.cc + 1) % 2;
+		state.turned++;
+		state.swapped = !state.swapped;
 	} else {
-		// Perform operation associated with the Color transition
+		// Perform operation associated with the color transition
 		get_command(state.current, next)(state);
 		state.current = next;
 	}
@@ -255,24 +251,26 @@ void expand(const std::vector<std::vector<Color>>& colors, std::vector<std::vect
 	
 	done[x][y] = true;
 	
-	if(x > 0 and !done[x - 1][y] and colors[x - 1][y].lightness == color.lightness &&
-	   colors[x - 1][y].hue == color.hue) {
-		expand(colors, done, x - 1, y, positions);
-	}
-	
-	if(y > 0 and !done[x][y - 1] and colors[x][y - 1].lightness == color.lightness &&
-	   colors[x][y - 1].hue == color.hue) {
-		expand(colors, done, x, y - 1, positions);
-	}
-	
-	if(x < 14 and !done[x + 1][y] and colors[x + 1][y].lightness == color.lightness &&
-	   colors[x + 1][y].hue == color.hue) {
-		expand(colors, done, x + 1, y, positions);
-	}
-	
-	if(y < 5 and !done[x][y + 1] and colors[x][y + 1].lightness == color.lightness &&
-	   colors[x][y + 1].hue == color.hue) {
-		expand(colors, done, x, y + 1, positions);
+	// White pixels should be color blocks on their own
+	if(color.lightness != LIGHT || color.hue != NONE) {
+		if(x > 0 && !done[x - 1][y] && colors[x - 1][y].lightness == color.lightness && colors[x - 1][y].hue == color.hue) {
+			expand(colors, done, x - 1, y, positions);
+		}
+		
+		if(y > 0 && !done[x][y - 1] and colors[x][y - 1].lightness == color.lightness &&
+		   colors[x][y - 1].hue == color.hue) {
+			expand(colors, done, x, y - 1, positions);
+		}
+		
+		if(x < colors.size() - 1 && !done[x + 1][y] and colors[x + 1][y].lightness == color.lightness &&
+		   colors[x + 1][y].hue == color.hue) {
+			expand(colors, done, x + 1, y, positions);
+		}
+		
+		if(y < colors[0].size() - 1 && !done[x][y + 1] and colors[x][y + 1].lightness == color.lightness &&
+		   colors[x][y + 1].hue == color.hue) {
+			expand(colors, done, x, y + 1, positions);
+		}
 	}
 }
 
@@ -283,7 +281,7 @@ Block* pos2block(const Position& pos, std::vector<Block>& blocks) {
 		}
 	}
 	
-	return {};
+	return &blocks.back();
 }
 
 Block load_image(const char* image) {
@@ -411,36 +409,25 @@ Block load_image(const char* image) {
 	
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
-			if(colors[x][y].hue == NONE and colors[x][y].lightness == LIGHT) {
-				// White pixel, should be a Color Block on its own
-				std::vector<Position> positions;
-				
-				positions.push_back({x, y});
-				
-				done[x][y] = true;
-				
-				Block block = {colors[x][y], positions.size(), positions};
-				
-				blocks.push_back(block);
-			} else if(!done[x][y]) {
-				std::vector<Position> positions;
-				
-				expand(colors, done, x, y, positions);
-				
-				Block block = {colors[x][y], positions.size(), positions};
-				
-				blocks.push_back(block);
-			}
+			std::vector<Position> positions;
+			
+			expand(colors, done, x, y, positions);
+			
+			Block block = {colors[x][y], positions};
+			
+			blocks.push_back(block);
 		}
 	}
 	
+	blocks.push_back({{DARK, NONE}});    // This black block will take care of falling off the edge of the program
+	
 	// Assign neighbors to all blocks
 	
-	for(auto block : blocks) {
+	for(int i = 0; i < blocks.size() - 1; i++) {
 		
 		struct Block* neighbors[8];
 		
-		std::vector<Position> positions = block.positions;
+		std::vector<Position> positions = blocks[i].positions;
 		
 		std::vector<Position> right;
 		std::vector<Position> down;
@@ -452,23 +439,21 @@ Block load_image(const char* image) {
 		left.push_back(positions[0]);
 		up.push_back(positions[0]);
 		
-		for(int i = 1; i < positions.size(); i++) {
-			Position current = positions[i];
-			
-			if(right[0].x <= current.x) {
-				if(right[0].x != current.x) right.clear();
-				right.push_back(current);
-			} else if(current.x <= left[0].x) {
-				if(left[0].x != current.x) left.clear();
-				left.push_back(current);
+		for(auto position : positions) {
+			if(right[0].x <= position.x) {
+				if(right[0].x != position.x) right.clear();
+				right.push_back(position);
+			} else if(position.x <= left[0].x) {
+				if(left[0].x != position.x) left.clear();
+				left.push_back(position);
 			}
 			
-			if(down[0].y <= current.y) {
-				if(down[0].y != current.y) down.clear();
-				down.push_back(current);
-			} else if(current.y <= up[0].y) {
-				if(up[0].y != current.y) up.clear();
-				up.push_back(current);
+			if(down[0].y <= position.y) {
+				if(down[0].y != position.y) down.clear();
+				down.push_back(position);
+			} else if(position.y <= up[0].y) {
+				if(up[0].y != position.y) up.clear();
+				up.push_back(position);
 			}
 		}
 		
@@ -481,20 +466,20 @@ Block load_image(const char* image) {
 		neighbors[6] = pos2block(*std::min_element(up.begin(), up.end(), &compare_x), blocks);
 		neighbors[7] = pos2block(*std::max_element(up.begin(), up.end(), &compare_x), blocks);
 		
-		block.neighbors = neighbors;
+		blocks[i].neighbors = neighbors;
 	}
 	
 	// Return starting Block
 	
-	return blocks[0];
+	return blocks.front();
 }
 
 int main() {
 	State state = {load_image("/home/rick/CLionProjects/piet/test.bmp")};
 	
-//	while(state.tries < 8) {
-//		next_state(state);
-//	}
+	while(state.turned < 4) {
+		next_state(state);
+	}
 	
 	return 0;
 }
