@@ -57,11 +57,15 @@ void skip(State& state) {
 }
 
 void push(State& state) {
-	state.stack.push(state.current.positions.size());
+	int a = state.current.positions.size();
+	
+	state.stack.push(a);
+	// std::cout << "push " << a << "; ";
 }
 
 void pop(State& state) {
 	state.stack.pop();
+	// std::cout << "pop; ";
 }
 
 void add(State& state) {
@@ -72,6 +76,7 @@ void add(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a + b);
+	// std::cout << "add " << a << " " << b << "; ";
 }
 
 void subtract(State& state) {
@@ -82,6 +87,7 @@ void subtract(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a - b);
+	// std::cout << "subtract " << a << " " << b << "; ";
 }
 
 void multiply(State& state) {
@@ -92,6 +98,7 @@ void multiply(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a * b);
+	// std::cout << "multiply " << a << " " << b << "; ";
 }
 
 void divide(State& state) {
@@ -101,7 +108,8 @@ void divide(State& state) {
 	int a = state.stack.top();
 	state.stack.pop();
 	
-	state.stack.push(static_cast<int>(a / b));
+	state.stack.push(a / b);
+	// std::cout << "divide " << a << " " << b << "; ";
 }
 
 void mod(State& state) {
@@ -112,6 +120,7 @@ void mod(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(((a % b) + b) % b);
+	// std::cout << "mod " << a << " " << b << "; ";
 }
 
 void nott(State& state) {
@@ -119,6 +128,7 @@ void nott(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(!a);
+	// std::cout << "not " << a << "; ";
 }
 
 void greater(State& state) {
@@ -129,6 +139,7 @@ void greater(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a > b);
+	// std::cout << "greater " << a << " " << b << "; ";
 }
 
 void pointer(State& state) {
@@ -136,6 +147,7 @@ void pointer(State& state) {
 	state.stack.pop();
 	
 	state.dp = (((state.dp + a) % 4) + 4) % 4;
+	// std::cout << "pointer " << a << "; ";
 }
 
 void switchh(State& state) {
@@ -143,6 +155,7 @@ void switchh(State& state) {
 	state.stack.pop();
 	
 	state.cc = (((state.cc + a) % 2) + 2) % 2;
+	// std::cout << "switch " << a << "; ";
 }
 
 void duplicate(State& state) {
@@ -151,6 +164,7 @@ void duplicate(State& state) {
 	
 	state.stack.push(a);
 	state.stack.push(a);
+	// std::cout << "duplicate " << a << "; ";
 }
 
 void roll(State& state) {
@@ -178,6 +192,7 @@ void roll(State& state) {
 			temp.pop();
 		}
 	}
+	// std::cout << "roll " << a << " " << b << "; ";
 }
 
 void in_number(State& state) {
@@ -186,6 +201,7 @@ void in_number(State& state) {
 	std::cin >> a;
 	
 	state.stack.push(a);
+	// std::cout << "in " << a << "; ";
 }
 
 void in_char(State& state) {
@@ -194,6 +210,7 @@ void in_char(State& state) {
 	std::cin >> a;
 	
 	state.stack.push(a);
+	// std::cout << "in " << a << "; ";
 }
 
 void out_number(State& state) {
@@ -201,6 +218,7 @@ void out_number(State& state) {
 	state.stack.pop();
 	
 	std::cout << a;
+	// std::cout << "out " << a << "; ";
 }
 
 void out_char(State& state) {
@@ -208,6 +226,7 @@ void out_char(State& state) {
 	state.stack.pop();
 	
 	std::cout << static_cast<char>(a);
+	// std::cout << "out " << a << "; ";
 }
 
 const command commands[3][6] = {{skip, add,      divide, greater, duplicate, in_char},
@@ -227,7 +246,7 @@ command get_command(const Block& from, const Block& to) {
 }
 
 void next_state(State& state) {
-	Block next = (*state.current.neighbors)[state.dp * 2 + state.cc];
+	Block next = *state.current.neighbors[state.dp * 2 + state.cc];
 	
 	if(next.color.hue == NONE && next.color.lightness == DARK) {
 		// Bumped into black block or fell off the edge
@@ -235,12 +254,16 @@ void next_state(State& state) {
 			state.dp = (state.dp + 1) % 4;
 		}
 		state.cc = (state.cc + 1) % 2;
+		
 		state.turned++;
 		state.swapped = !state.swapped;
 	} else {
 		// Perform operation associated with the color transition
 		get_command(state.current, next)(state);
 		state.current = next;
+		
+		state.turned = 0;
+		state.swapped = false;
 	}
 }
 
