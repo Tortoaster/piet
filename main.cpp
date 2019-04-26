@@ -26,7 +26,7 @@ struct Position {
 struct Block {
 	Color color;
 	std::vector<Position> positions;
-	struct Block** neighbors;
+	struct Block* neighbors[8];
 };
 
 struct State {
@@ -223,7 +223,7 @@ command get_command(const Block& from, const Block& to) {
 	short hue_change = (to.color.hue - from.color.hue + 6) % 6;
 	short lightness_change = (to.color.lightness - from.color.lightness + 3) % 3;
 	
-	return commands[hue_change][lightness_change];
+	return commands[lightness_change][hue_change];
 }
 
 void next_state(State& state) {
@@ -274,10 +274,10 @@ void expand(const std::vector<std::vector<Color>>& colors, std::vector<std::vect
 	}
 }
 
-Block* pos2block(const Position& pos, std::vector<Block>& blocks) {
-	for(auto& block : blocks) {
-		if(std::find(block.positions.begin(), block.positions.end(), pos) != block.positions.end()) {
-			return &block;
+Block* find_block(const Position& pos, std::vector<Block>& blocks) {
+	for(int i = 0; i < blocks.size() - 1; i++) {
+		if(std::find(blocks[i].positions.begin(), blocks[i].positions.end(), pos) != blocks[i].positions.end()) {
+			return &blocks[i];
 		}
 	}
 	
@@ -425,8 +425,6 @@ Block load_image(const char* image) {
 	
 	for(int i = 0; i < blocks.size() - 1; i++) {
 		
-		struct Block* neighbors[8];
-		
 		std::vector<Position> positions = blocks[i].positions;
 		
 		std::vector<Position> right;
@@ -457,16 +455,14 @@ Block load_image(const char* image) {
 			}
 		}
 		
-		neighbors[0] = pos2block(*std::min_element(right.begin(), right.end(), &compare_y), blocks);
-		neighbors[1] = pos2block(*std::max_element(right.begin(), right.end(), &compare_y), blocks);
-		neighbors[2] = pos2block(*std::max_element(down.begin(), down.end(), &compare_x), blocks);
-		neighbors[3] = pos2block(*std::min_element(down.begin(), down.end(), &compare_x), blocks);
-		neighbors[4] = pos2block(*std::max_element(left.begin(), left.end(), &compare_y), blocks);
-		neighbors[5] = pos2block(*std::min_element(left.begin(), left.end(), &compare_y), blocks);
-		neighbors[6] = pos2block(*std::min_element(up.begin(), up.end(), &compare_x), blocks);
-		neighbors[7] = pos2block(*std::max_element(up.begin(), up.end(), &compare_x), blocks);
-		
-		blocks[i].neighbors = neighbors;
+		blocks[i].neighbors[0] = find_block({right.front().x + 1, (*std::min_element(right.begin(), right.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[1] = find_block({right.front().x + 1, (*std::max_element(right.begin(), right.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[2] = find_block({(*std::max_element(down.begin(), down.end(), &compare_x)).x, down.front().y + 1}, blocks);
+		blocks[i].neighbors[3] = find_block({(*std::min_element(down.begin(), down.end(), &compare_x)).x, down.front().y + 1}, blocks);
+		blocks[i].neighbors[4] = find_block({left.front().x - 1, (*std::max_element(left.begin(), left.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[5] = find_block({left.front().x - 1, (*std::min_element(left.begin(), left.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[6] = find_block({(*std::min_element(up.begin(), up.end(), &compare_x)).x, up.front().y - 1}, blocks);
+		blocks[i].neighbors[7] = find_block({(*std::max_element(up.begin(), up.end(), &compare_x)).x, up.front().y - 1}, blocks);
 	}
 	
 	// Return starting Block
@@ -475,7 +471,7 @@ Block load_image(const char* image) {
 }
 
 int main() {
-	State state = {load_image("/home/rick/CLionProjects/piet/test.bmp")};
+	State state = {load_image("/home/rick/CLionProjects/piet/palindrome.bmp")};
 	
 	while(state.turned < 4) {
 		next_state(state);
