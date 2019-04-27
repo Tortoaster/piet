@@ -18,6 +18,48 @@ struct Color {
 	Hue hue;
 };
 
+std::ostream& operator<<(std::ostream& os, const Color& color) {
+	std::string a, b;
+	
+	switch(color.lightness) {
+		case LIGHT:
+			a = "LIGHT";
+			break;
+		case DARK:
+			a = "DARK";
+			break;
+		default:
+			a = "";
+	}
+	
+	switch(color.hue) {
+		case RED:
+			b = "RED";
+			break;
+		case YELLOW:
+			b = "YELLOW";
+			break;
+		case GREEN:
+			b = "GREEN";
+			break;
+		case CYAN:
+			b = "CYAN";
+			break;
+		case BLUE:
+			b = "BLUE";
+			break;
+		case MAGENTA:
+			b = "MAGENTA";
+			break;
+		default:
+			a = "";
+			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
+	}
+	
+	os << a << " " << b;
+	return os;
+}
+
 struct Position {
 	int x;
 	int y;
@@ -274,7 +316,7 @@ void expand(const std::vector<std::vector<Color>>& colors, std::vector<std::vect
 	
 	done[x][y] = true;
 	
-	// White pixels should be color blocks on their own
+	// White pixels should be color blocks on their own, even when their neighbors are also white, because that allows us to "slide across" them without adding code
 	if(color.lightness != LIGHT || color.hue != NONE) {
 		if(x > 0 && !done[x - 1][y] && colors[x - 1][y].lightness == color.lightness && colors[x - 1][y].hue == color.hue) {
 			expand(colors, done, x - 1, y, positions);
@@ -442,7 +484,7 @@ Block load_image(const char* image) {
 		}
 	}
 	
-	blocks.push_back({{DARK, NONE}});    // This black block will take care of falling off the edge of the program
+	blocks.push_back({{DARK, NONE}});    // This black block will represent all edges of the program
 	
 	// Assign neighbors to all blocks
 	
@@ -478,24 +520,25 @@ Block load_image(const char* image) {
 			}
 		}
 		
-		blocks[i].neighbors[0] = find_block({right.front().x + 1, (*std::min_element(right.begin(), right.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[1] = find_block({right.front().x + 1, (*std::max_element(right.begin(), right.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[2] = find_block({(*std::max_element(down.begin(), down.end(), &compare_x)).x, down.front().y + 1}, blocks);
-		blocks[i].neighbors[3] = find_block({(*std::min_element(down.begin(), down.end(), &compare_x)).x, down.front().y + 1}, blocks);
-		blocks[i].neighbors[4] = find_block({left.front().x - 1, (*std::max_element(left.begin(), left.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[5] = find_block({left.front().x - 1, (*std::min_element(left.begin(), left.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[6] = find_block({(*std::min_element(up.begin(), up.end(), &compare_x)).x, up.front().y - 1}, blocks);
-		blocks[i].neighbors[7] = find_block({(*std::max_element(up.begin(), up.end(), &compare_x)).x, up.front().y - 1}, blocks);
+		blocks[i].neighbors[0] = find_block({right[0].x + 1, (*std::min_element(right.begin(), right.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[1] = find_block({right[0].x + 1, (*std::max_element(right.begin(), right.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[2] = find_block({(*std::max_element(down.begin(), down.end(), &compare_x)).x, down[0].y + 1}, blocks);
+		blocks[i].neighbors[3] = find_block({(*std::min_element(down.begin(), down.end(), &compare_x)).x, down[0].y + 1}, blocks);
+		blocks[i].neighbors[4] = find_block({left[0].x - 1, (*std::max_element(left.begin(), left.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[5] = find_block({left[0].x - 1, (*std::min_element(left.begin(), left.end(), &compare_y)).y}, blocks);
+		blocks[i].neighbors[6] = find_block({(*std::min_element(up.begin(), up.end(), &compare_x)).x, up[0].y - 1}, blocks);
+		blocks[i].neighbors[7] = find_block({(*std::max_element(up.begin(), up.end(), &compare_x)).x, up[0].y - 1}, blocks);
 	}
 	
 	// Return starting Block
 	
-	return blocks.front();
+	return blocks[0];
 }
 
 int main() {
-	State state = {load_image("/home/rick/CLionProjects/piet/palindrome.bmp")};
-	
+	Block starting_block = load_image("/home/rick/CLionProjects/piet/eerste.bmp");
+	State state = {starting_block};
+
 	while(state.turned < 4) {
 		next_state(state);
 	}
