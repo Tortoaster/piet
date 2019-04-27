@@ -81,7 +81,7 @@ struct State {
 };
 
 bool operator==(const Position& p1, const Position& p2) {
-	return p1.x == p2.x and p1.y == p2.y;
+	return p1.x == p2.x && p1.y == p2.y;
 }
 
 bool compare_x(const Position& p1, const Position& p2) {
@@ -275,10 +275,10 @@ const command commands[3][6] = {{skip, add,      divide, greater, duplicate, in_
 								{push, subtract, mod,    pointer, roll,      out_number},
 								{pop,  multiply, nott,   switchh, in_number, out_char}};
 
-command get_command(const Block& from, const Block& to) {
+const command& get_command(const Block& from, const Block& to) {
 	if((from.color.hue == NONE and from.color.lightness == LIGHT) or (to.color.hue == NONE and to.color.lightness == LIGHT)) {
 		// Either going to or coming from a white Color Block
-		return skip;
+		return commands[0][0];
 	}
 	
 	short hue_change = (to.color.hue - from.color.hue + 6) % 6;
@@ -294,10 +294,10 @@ void next_state(State& state) {
 		// Bumped into black block or fell off the edge
 		if(state.swapped) {
 			state.dp = (state.dp + 1) % 4;
+			state.turned++;
 		}
-		state.cc = (state.cc + 1) % 2;
 		
-		state.turned++;
+		state.cc = (state.cc + 1) % 2;
 		state.swapped = !state.swapped;
 	} else {
 		// Perform operation associated with the color transition
@@ -322,34 +322,31 @@ void expand(const std::vector<std::vector<Color>>& colors, std::vector<std::vect
 			expand(colors, done, x - 1, y, positions);
 		}
 		
-		if(y > 0 && !done[x][y - 1] and colors[x][y - 1].lightness == color.lightness &&
-		   colors[x][y - 1].hue == color.hue) {
+		if(y > 0 && !done[x][y - 1] and colors[x][y - 1].lightness == color.lightness && colors[x][y - 1].hue == color.hue) {
 			expand(colors, done, x, y - 1, positions);
 		}
 		
-		if(x < colors.size() - 1 && !done[x + 1][y] and colors[x + 1][y].lightness == color.lightness &&
-		   colors[x + 1][y].hue == color.hue) {
+		if(x < colors.size() - 1 && !done[x + 1][y] and colors[x + 1][y].lightness == color.lightness && colors[x + 1][y].hue == color.hue) {
 			expand(colors, done, x + 1, y, positions);
 		}
 		
-		if(y < colors[0].size() - 1 && !done[x][y + 1] and colors[x][y + 1].lightness == color.lightness &&
-		   colors[x][y + 1].hue == color.hue) {
+		if(y < colors[0].size() - 1 && !done[x][y + 1] and colors[x][y + 1].lightness == color.lightness && colors[x][y + 1].hue == color.hue) {
 			expand(colors, done, x, y + 1, positions);
 		}
 	}
 }
 
-Block* find_block(const Position& pos, std::vector<Block>& blocks) {
+Block& find_block(const Position& pos, std::vector<Block>& blocks) {
 	for(int i = 0; i < blocks.size() - 1; i++) {
 		if(std::find(blocks[i].positions.begin(), blocks[i].positions.end(), pos) != blocks[i].positions.end()) {
-			return &blocks[i];
+			return blocks[i];
 		}
 	}
 	
-	return &blocks.back();
+	return blocks.back();
 }
 
-Block load_image(const char* image) {
+std::vector<Block> load_image(const char* image) {
 	
 	// Read image
 	
@@ -474,13 +471,15 @@ Block load_image(const char* image) {
 	
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
-			std::vector<Position> positions;
-			
-			expand(colors, done, x, y, positions);
-			
-			Block block = {colors[x][y], positions};
-			
-			blocks.push_back(block);
+			if(!done[x][y]) {
+				std::vector<Position> positions;
+				
+				expand(colors, done, x, y, positions);
+				
+				Block block = {colors[x][y], positions};
+				
+				blocks.push_back(block);
+			}
 		}
 	}
 	
@@ -490,54 +489,52 @@ Block load_image(const char* image) {
 	
 	for(int i = 0; i < blocks.size() - 1; i++) {
 		
-		std::vector<Position> positions = blocks[i].positions;
-		
 		std::vector<Position> right;
 		std::vector<Position> down;
 		std::vector<Position> left;
 		std::vector<Position> up;
 		
-		right.push_back(positions[0]);
-		down.push_back(positions[0]);
-		left.push_back(positions[0]);
-		up.push_back(positions[0]);
-		
-		for(auto position : positions) {
-			if(right[0].x <= position.x) {
-				if(right[0].x != position.x) right.clear();
+		for(auto & position : blocks[i].positions) {
+			if(right.empty() || right[0].x <= position.x) {
+				if(!right.empty() && right[0].x != position.x) right.clear();
 				right.push_back(position);
-			} else if(position.x <= left[0].x) {
-				if(left[0].x != position.x) left.clear();
+			}
+			
+			if(down.empty() || down[0].y <= position.y) {
+				if(!down.empty() && down[0].y != position.y) down.clear();
+				down.push_back(position);
+			}
+			
+			if(left.empty() || left[0].x >= position.x) {
+				if(!left.empty() && left[0].x != position.x) left.clear();
 				left.push_back(position);
 			}
 			
-			if(down[0].y <= position.y) {
-				if(down[0].y != position.y) down.clear();
-				down.push_back(position);
-			} else if(position.y <= up[0].y) {
-				if(up[0].y != position.y) up.clear();
+			if(up.empty() || up[0].y >= position.y) {
+				if(!up.empty() && up[0].y != position.y) up.clear();
 				up.push_back(position);
 			}
 		}
 		
-		blocks[i].neighbors[0] = find_block({right[0].x + 1, (*std::min_element(right.begin(), right.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[1] = find_block({right[0].x + 1, (*std::max_element(right.begin(), right.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[2] = find_block({(*std::max_element(down.begin(), down.end(), &compare_x)).x, down[0].y + 1}, blocks);
-		blocks[i].neighbors[3] = find_block({(*std::min_element(down.begin(), down.end(), &compare_x)).x, down[0].y + 1}, blocks);
-		blocks[i].neighbors[4] = find_block({left[0].x - 1, (*std::max_element(left.begin(), left.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[5] = find_block({left[0].x - 1, (*std::min_element(left.begin(), left.end(), &compare_y)).y}, blocks);
-		blocks[i].neighbors[6] = find_block({(*std::min_element(up.begin(), up.end(), &compare_x)).x, up[0].y - 1}, blocks);
-		blocks[i].neighbors[7] = find_block({(*std::max_element(up.begin(), up.end(), &compare_x)).x, up[0].y - 1}, blocks);
+		blocks[i].neighbors[0] = &find_block({right[0].x + 1, (*std::min_element(right.begin(), right.end(), compare_y)).y}, blocks);
+		blocks[i].neighbors[1] = &find_block({right[0].x + 1, (*std::max_element(right.begin(), right.end(), compare_y)).y}, blocks);
+		blocks[i].neighbors[2] = &find_block({(*std::max_element(down.begin(), down.end(), compare_x)).x, down[0].y + 1}, blocks);
+		blocks[i].neighbors[3] = &find_block({(*std::min_element(down.begin(), down.end(), compare_x)).x, down[0].y + 1}, blocks);
+		blocks[i].neighbors[4] = &find_block({left[0].x - 1, (*std::max_element(left.begin(), left.end(), compare_y)).y}, blocks);
+		blocks[i].neighbors[5] = &find_block({left[0].x - 1, (*std::min_element(left.begin(), left.end(), compare_y)).y}, blocks);
+		blocks[i].neighbors[6] = &find_block({(*std::min_element(up.begin(), up.end(), compare_x)).x, up[0].y - 1}, blocks);
+		blocks[i].neighbors[7] = &find_block({(*std::max_element(up.begin(), up.end(), compare_x)).x, up[0].y - 1}, blocks);
 	}
 	
 	// Return starting Block
 	
-	return blocks[0];
+	return blocks;
 }
 
 int main() {
-	Block starting_block = load_image("/home/rick/CLionProjects/piet/eerste.bmp");
-	State state = {starting_block};
+	std::vector<Block> blocks = load_image("/home/rick/CLionProjects/piet/palindrome.bmp");
+	
+	State state = {blocks.front()};
 
 	while(state.turned < 4) {
 		next_state(state);
