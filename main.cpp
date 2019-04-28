@@ -26,34 +26,34 @@ std::ostream& operator<<(std::ostream& os, const Color& color) {
 			a = "LIGHT";
 			break;
 		case DARK:
-			a = "DARK";
+			a = "DARK ";
 			break;
 		default:
-			a = "";
+			a = "     ";
 	}
 	
 	switch(color.hue) {
 		case RED:
-			b = "RED";
+			b = "    RED";
 			break;
 		case YELLOW:
-			b = "YELLOW";
+			b =  "YELLOW";
 			break;
 		case GREEN:
-			b = "GREEN";
+			b = "  GREEN";
 			break;
 		case CYAN:
-			b = "CYAN";
+			b = "   CYAN";
 			break;
 		case BLUE:
-			b = "BLUE";
+			b = "   BLUE";
 			break;
 		case MAGENTA:
 			b = "MAGENTA";
 			break;
 		default:
-			a = "";
-			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
+			a = "     ";
+			b = color.lightness == LIGHT ? "WHITE  " : "BLACK  ";
 	}
 	
 	os << a << " " << b;
@@ -346,7 +346,7 @@ Block& find_block(const Position& pos, std::vector<Block>& blocks) {
 	return blocks.back();
 }
 
-std::vector<Block> load_image(const char* image) {
+std::vector<Block> load_image(const char* image, const int codel_size) {
 	
 	// Read image
 	
@@ -367,13 +367,13 @@ std::vector<Block> load_image(const char* image) {
 	
 	// Transform image to colors
 	
-	std::vector<std::vector<Color>> colors(width, std::vector<Color>(height));
+	std::vector<std::vector<Color>> colors(width / codel_size, std::vector<Color>(height / codel_size));
 	
-	for(int y = 0; y < height; y++) {
-		for(int x = 0; x < width; x++) {
-			int blue = data[3 * ((height - y - 1) * width + x)];
-			int green = data[3 * ((height - y - 1) * width + x) + 1];
-			int red = data[3 * ((height - y - 1) * width + x) + 2];
+	for(int y = 0; y < height / codel_size; y++) {
+		for(int x = 0; x < width / codel_size; x++) {
+			int blue = data[3 * ((height - y * codel_size - 1) * width + x * codel_size)];
+			int green = data[3 * ((height - y * codel_size - 1) * width + x * codel_size) + 1];
+			int red = data[3 * ((height - y * codel_size - 1) * width + x * codel_size) + 2];
 			
 			switch(red) {
 				case 0:
@@ -465,12 +465,12 @@ std::vector<Block> load_image(const char* image) {
 	
 	// Find Color blocks
 	
-	std::vector<std::vector<bool>> done(width, std::vector<bool>(height, false));
+	std::vector<std::vector<bool>> done(width / codel_size, std::vector<bool>(height / codel_size, false));
 	
 	std::vector<Block> blocks;
 	
-	for(int y = 0; y < height; y++) {
-		for(int x = 0; x < width; x++) {
+	for(int y = 0; y < height / codel_size; y++) {
+		for(int x = 0; x < width / codel_size; x++) {
 			if(!done[x][y]) {
 				std::vector<Position> positions;
 				
@@ -532,7 +532,10 @@ std::vector<Block> load_image(const char* image) {
 }
 
 int main() {
-	std::vector<Block> blocks = load_image("/home/rick/CLionProjects/piet/palindrome.bmp");
+	const int codel_size = 1;
+	const char* filename = "/home/rick/CLionProjects/piet/2xtPK.bmp";
+	
+	std::vector<Block> blocks = load_image(filename, codel_size);
 	
 	State state = {blocks.front()};
 
