@@ -23,40 +23,40 @@ std::ostream& operator<<(std::ostream& os, const Color& color) {
 	
 	switch(color.lightness) {
 		case LIGHT:
-			a = "LIGHT";
+			a = "LIGHT ";
 			break;
 		case DARK:
 			a = "DARK ";
 			break;
 		default:
-			a = "     ";
+			a = "";
 	}
 	
 	switch(color.hue) {
 		case RED:
-			b = "    RED";
+			b = "RED";
 			break;
 		case YELLOW:
 			b =  "YELLOW";
 			break;
 		case GREEN:
-			b = "  GREEN";
+			b = "GREEN";
 			break;
 		case CYAN:
-			b = "   CYAN";
+			b = "CYAN";
 			break;
 		case BLUE:
-			b = "   BLUE";
+			b = "BLUE";
 			break;
 		case MAGENTA:
 			b = "MAGENTA";
 			break;
 		default:
-			a = "     ";
-			b = color.lightness == LIGHT ? "WHITE  " : "BLACK  ";
+			a = "";
+			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
 	}
 	
-	os << a << " " << b;
+	os << a << b;
 	return os;
 }
 
@@ -356,8 +356,8 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 	
 	fread(header, sizeof(unsigned char), 54, file);
 	
-	int width = *(int*) &header[18];
-	int height = *(int*) &header[22];
+	int width = (*(int*) &header[18]);
+	int height = (*(int*) &header[22]);
 	int size = 3 * width * height;
 	
 	auto* data = new unsigned char[size];
@@ -365,107 +365,94 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 	
 	fclose(file);
 	
+	width /= codel_size;
+	height /= codel_size;
+	
 	// Transform image to colors
 	
-	std::vector<std::vector<Color>> colors(width / codel_size, std::vector<Color>(height / codel_size));
+	std::vector<std::vector<Color>> colors(width, std::vector<Color>(height));
 	
-	for(int y = 0; y < height / codel_size; y++) {
-		for(int x = 0; x < width / codel_size; x++) {
-			int blue = data[3 * ((height - y * codel_size - 1) * width + x * codel_size)];
-			int green = data[3 * ((height - y * codel_size - 1) * width + x * codel_size) + 1];
-			int red = data[3 * ((height - y * codel_size - 1) * width + x * codel_size) + 2];
+	for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
+			int blue = data[3 * ((height - y - 1) * width * codel_size + x * codel_size)];
+			int green = data[3 * ((height - y - 1) * width * codel_size + x * codel_size) + 1];
+			int red = data[3 * ((height - y - 1) * width * codel_size + x * codel_size) + 2];
 			
-			switch(red) {
-				case 0:
-					switch(green) {
-						case 0:
-							switch(blue) {
-								case 0:
-									colors[x][y] = {DARK, NONE};
-									break;
-								case 192:
-									colors[x][y] = {DARK, BLUE};
-									break;
-								default:
-									colors[x][y] = {NORMAL, BLUE};
-							}
-							break;
-						case 192:
-							if(blue == 0) {
-								colors[x][y] = {DARK, GREEN};
-							} else {
-								colors[x][y] = {DARK, CYAN};
-							}
-							break;
-						default:
-							if(blue == 0) {
-								colors[x][y] = {NORMAL, GREEN};
-							} else {
-								colors[x][y] = {NORMAL, CYAN};
-							}
+			if(red < 32) {
+				if(green < 32) {
+					if(blue < 32) {
+						colors[x][y] = {DARK, NONE};
+					} else if(blue > 224) {
+						colors[x][y] = {NORMAL, BLUE};
+					} else {
+						colors[x][y] = {DARK, BLUE};
 					}
-					break;
-				case 192:
-					switch(green) {
-						case 0:
-							if(blue == 0) {
-								colors[x][y] = {DARK, RED};
-							} else {
-								colors[x][y] = {DARK, MAGENTA};
-							}
-							break;
-						case 192:
-							if(blue == 0) {
-								colors[x][y] = {DARK, YELLOW};
-							} else {
-								colors[x][y] = {LIGHT, BLUE};
-							}
-							break;
-						default:
-							if(blue == 192) {
-								colors[x][y] = {LIGHT, GREEN};
-							} else {
-								colors[x][y] = {LIGHT, CYAN};
-							}
+				} else if(green > 224) {
+					if(blue < 32) {
+						colors[x][y] = {NORMAL, GREEN};
+					} else {
+						colors[x][y] = {NORMAL, CYAN};
 					}
-					break;
-				default:
-					switch(green) {
-						case 0:
-							if(blue == 0) {
-								colors[x][y] = {NORMAL, RED};
-							} else {
-								colors[x][y] = {NORMAL, MAGENTA};
-							}
-							break;
-						case 192:
-							if(blue == 192) {
-								colors[x][y] = {LIGHT, RED};
-							} else {
-								colors[x][y] = {LIGHT, MAGENTA};
-							}
-							break;
-						default:
-							switch(blue) {
-								case 0:
-									colors[x][y] = {NORMAL, YELLOW};
-									break;
-								case 192:
-									colors[x][y] = {LIGHT, YELLOW};
-									break;
-								default:
-									colors[x][y] = {LIGHT, NONE};
-							}
+				} else {
+					if(blue < 32) {
+						colors[x][y] = {DARK, GREEN};
+					} else {
+						colors[x][y] = {DARK, CYAN};
 					}
+				}
+			} else if (red > 224) {
+				if(green < 32) {
+					if(blue < 32) {
+						colors[x][y] = {NORMAL, RED};
+					} else {
+						colors[x][y] = {NORMAL, MAGENTA};
+					}
+				} else if(green > 224) {
+					if(blue < 32) {
+						colors[x][y] = {NORMAL, YELLOW};
+					} else if(blue > 224) {
+						colors[x][y] = {LIGHT, NONE};
+					} else {
+						colors[x][y] = {LIGHT, YELLOW};
+					}
+				} else {
+					if(blue <= 224) {
+						colors[x][y] = {LIGHT, RED};
+					} else {
+						colors[x][y] = {LIGHT, MAGENTA};
+					}
+				}
+			} else {
+				if(green < 32) {
+					if(blue < 32) {
+						colors[x][y] = {DARK, RED};
+					} else {
+						colors[x][y] = {DARK, MAGENTA};
+					}
+				} else if(green > 224) {
+					if(blue <= 224) {
+						colors[x][y] = {LIGHT, GREEN};
+					} else {
+						colors[x][y] = {LIGHT, CYAN};
+					}
+				} else {
+					if(blue < 32) {
+						colors[x][y] = {DARK, YELLOW};
+					} else {
+						colors[x][y] = {LIGHT, BLUE};
+					}
+				}
 			}
+			std::cout << colors[x][y] << ", ";
 		}
+		std::cout << std::endl;
 	}
 	
 	delete[] data;
 	
 	// Find Color blocks
 	
-	std::vector<std::vector<bool>> done(width / codel_size, std::vector<bool>(height / codel_size, false));
+	std::vector<std::vector<bool>> done(width, std::vector<bool>(height, false));
 	
 	std::vector<Block> blocks;
 	
@@ -532,8 +519,8 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 }
 
 int main() {
-	const int codel_size = 1;
-	const char* filename = "/home/rick/CLionProjects/piet/2xtPK.bmp";
+	const int codel_size = 110;
+	const char* filename = "/home/rick/CLionProjects/piet/Piet_Hello_World.bmp";
 	
 	std::vector<Block> blocks = load_image(filename, codel_size);
 	
