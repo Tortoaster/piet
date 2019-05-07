@@ -6,11 +6,11 @@
 
 // LIGHT NONE is white and DARK NONE is black, NORMAL NONE is undefined
 enum Hue {
-	RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA, NONE
+	RED = 0, YELLOW = 1, GREEN = 2, CYAN = 3, BLUE = 4, MAGENTA = 5, NONE = 6
 };
 
 enum Lightness {
-	LIGHT, NORMAL, DARK
+	LIGHT = 0, NORMAL = 1, DARK = 2
 };
 
 struct Color {
@@ -102,12 +102,10 @@ void push(State& state) {
 	int a = state.current.positions.size();
 	
 	state.stack.push(a);
-	// std::cout << "push " << a << "; ";
 }
 
 void pop(State& state) {
 	state.stack.pop();
-	// std::cout << "pop; ";
 }
 
 void add(State& state) {
@@ -118,7 +116,6 @@ void add(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a + b);
-	// std::cout << "add " << a << " " << b << "; ";
 }
 
 void subtract(State& state) {
@@ -129,7 +126,6 @@ void subtract(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a - b);
-	// std::cout << "subtract " << a << " " << b << "; ";
 }
 
 void multiply(State& state) {
@@ -140,7 +136,6 @@ void multiply(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a * b);
-	// std::cout << "multiply " << a << " " << b << "; ";
 }
 
 void divide(State& state) {
@@ -151,7 +146,6 @@ void divide(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a / b);
-	// std::cout << "divide " << a << " " << b << "; ";
 }
 
 void mod(State& state) {
@@ -162,7 +156,6 @@ void mod(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(((a % b) + b) % b);
-	// std::cout << "mod " << a << " " << b << "; ";
 }
 
 void nott(State& state) {
@@ -170,7 +163,6 @@ void nott(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(!a);
-	// std::cout << "not " << a << "; ";
 }
 
 void greater(State& state) {
@@ -181,7 +173,6 @@ void greater(State& state) {
 	state.stack.pop();
 	
 	state.stack.push(a > b);
-	// std::cout << "greater " << a << " " << b << "; ";
 }
 
 void pointer(State& state) {
@@ -189,7 +180,6 @@ void pointer(State& state) {
 	state.stack.pop();
 	
 	state.dp = (((state.dp + a) % 4) + 4) % 4;
-	// std::cout << "pointer " << a << "; ";
 }
 
 void switchh(State& state) {
@@ -197,7 +187,6 @@ void switchh(State& state) {
 	state.stack.pop();
 	
 	state.cc = (((state.cc + a) % 2) + 2) % 2;
-	// std::cout << "switch " << a << "; ";
 }
 
 void duplicate(State& state) {
@@ -206,7 +195,6 @@ void duplicate(State& state) {
 	
 	state.stack.push(a);
 	state.stack.push(a);
-	// std::cout << "duplicate " << a << "; ";
 }
 
 void roll(State& state) {
@@ -234,7 +222,6 @@ void roll(State& state) {
 			temp.pop();
 		}
 	}
-	// std::cout << "roll " << a << " " << b << "; ";
 }
 
 void in_number(State& state) {
@@ -243,7 +230,6 @@ void in_number(State& state) {
 	std::cin >> a;
 	
 	state.stack.push(a);
-	// std::cout << "in " << a << "; ";
 }
 
 void in_char(State& state) {
@@ -252,7 +238,6 @@ void in_char(State& state) {
 	std::cin >> a;
 	
 	state.stack.push(a);
-	// std::cout << "in " << a << "; ";
 }
 
 void out_number(State& state) {
@@ -260,7 +245,6 @@ void out_number(State& state) {
 	state.stack.pop();
 	
 	std::cout << a;
-	// std::cout << "out " << a << "; ";
 }
 
 void out_char(State& state) {
@@ -268,7 +252,6 @@ void out_char(State& state) {
 	state.stack.pop();
 	
 	std::cout << static_cast<char>(a);
-	// std::cout << "out " << a << "; ";
 }
 
 const command commands[3][6] = {{skip, add,      divide, greater, duplicate, in_char},
@@ -295,10 +278,10 @@ void next_state(State& state) {
 		if(state.swapped) {
 			state.dp = (state.dp + 1) % 4;
 			state.turned++;
+		} else {
+			state.cc = (state.cc + 1) % 2;
+			state.swapped = !state.swapped;
 		}
-		
-		state.cc = (state.cc + 1) % 2;
-		state.swapped = !state.swapped;
 	} else {
 		// Perform operation associated with the color transition
 		get_command(state.current, next)(state);
@@ -443,9 +426,7 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 					}
 				}
 			}
-			std::cout << colors[x][y] << ", ";
 		}
-		std::cout << std::endl;
 	}
 	
 	delete[] data;
@@ -512,8 +493,6 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 		blocks[i].neighbors[6] = &find_block({(*std::min_element(up.begin(), up.end(), compare_x)).x, up[0].y - 1}, blocks);
 		blocks[i].neighbors[7] = &find_block({(*std::max_element(up.begin(), up.end(), compare_x)).x, up[0].y - 1}, blocks);
 	}
-	
-	// Return starting Block
 	
 	return blocks;
 }
