@@ -18,48 +18,6 @@ struct Color {
 	Hue hue;
 };
 
-std::ostream& operator<<(std::ostream& os, const Color& color) {
-	std::string a, b;
-	
-	switch(color.lightness) {
-		case LIGHT:
-			a = "LIGHT ";
-			break;
-		case DARK:
-			a = "DARK ";
-			break;
-		default:
-			a = "";
-	}
-	
-	switch(color.hue) {
-		case RED:
-			b = "RED";
-			break;
-		case YELLOW:
-			b =  "YELLOW";
-			break;
-		case GREEN:
-			b = "GREEN";
-			break;
-		case CYAN:
-			b = "CYAN";
-			break;
-		case BLUE:
-			b = "BLUE";
-			break;
-		case MAGENTA:
-			b = "MAGENTA";
-			break;
-		default:
-			a = "";
-			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
-	}
-	
-	os << a << b;
-	return os;
-}
-
 struct Position {
 	int x;
 	int y;
@@ -79,6 +37,48 @@ struct State {
 	short turned = 0;
 	bool swapped = false;
 };
+
+//std::ostream& operator<<(std::ostream& os, const Color& color) {
+//	std::string a, b;
+//
+//	switch(color.lightness) {
+//		case LIGHT:
+//			a = "LIGHT ";
+//			break;
+//		case DARK:
+//			a = "DARK ";
+//			break;
+//		default:
+//			a = "";
+//	}
+//
+//	switch(color.hue) {
+//		case RED:
+//			b = "RED";
+//			break;
+//		case YELLOW:
+//			b =  "YELLOW";
+//			break;
+//		case GREEN:
+//			b = "GREEN";
+//			break;
+//		case CYAN:
+//			b = "CYAN";
+//			break;
+//		case BLUE:
+//			b = "BLUE";
+//			break;
+//		case MAGENTA:
+//			b = "MAGENTA";
+//			break;
+//		default:
+//			a = "";
+//			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
+//	}
+//
+//	os << a << b;
+//	return os;
+//}
 
 bool operator==(const Position& p1, const Position& p2) {
 	return p1.x == p2.x && p1.y == p2.y;
@@ -357,9 +357,10 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 	
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
-			int blue = data[3 * ((height - y - 1) * width * codel_size + x * codel_size)];
-			int green = data[3 * ((height - y - 1) * width * codel_size + x * codel_size) + 1];
-			int red = data[3 * ((height - y - 1) * width * codel_size + x * codel_size) + 2];
+			int loc = ((height * codel_size - y * codel_size - codel_size) * width * codel_size + x * codel_size);
+			int blue = data[3 * loc];
+			int green = data[3 * loc + 1];
+			int red = data[3 * loc + 2];
 			
 			if(red < 32) {
 				if(green < 32) {
@@ -426,7 +427,9 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 					}
 				}
 			}
+//			std::cout << colors[x][y] << ", \t";
 		}
+//		std::cout << std::endl;
 	}
 	
 	delete[] data;
@@ -437,8 +440,8 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 	
 	std::vector<Block> blocks;
 	
-	for(int y = 0; y < height / codel_size; y++) {
-		for(int x = 0; x < width / codel_size; x++) {
+	for(int y = 0; y < height; y++) {
+		for(int x = 0; x < width; x++) {
 			if(!done[x][y]) {
 				std::vector<Position> positions;
 				
@@ -498,8 +501,8 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 }
 
 int main() {
-	const int codel_size = 110;
-	const char* filename = "/home/rick/CLionProjects/piet/Piet_Hello_World.bmp";
+	const int codel_size = 8;
+	const char* filename = "/home/rick/CLionProjects/piet/2xtPK.bmp";
 	
 	std::vector<Block> blocks = load_image(filename, codel_size);
 	
