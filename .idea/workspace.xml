@@ -13,11 +13,11 @@
   <component name="ChangeListManager">
     <list default="true" id="da0ffec5-ee20-4f17-8e7d-88ed4e59bb0d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2xtPK.bmp" beforeDir="false" afterPath="$PROJECT_DIR$/2xtPK.bmp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Piet_Hello_World.bmp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2xtPK.bmp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/piet.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/piet.dir/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/piet" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/piet" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/palindrome.bmp" beforeDir="false" afterPath="$PROJECT_DIR$/palindrome.bmp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,19 +44,19 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="511" column="26" selection-start-line="511" selection-start-column="26" selection-end-line="511" selection-end-column="26" />
+            <state relative-caret-position="1440">
+              <caret line="462" column="30" lean-forward="true" selection-start-line="462" selection-start-column="30" selection-end-line="462" selection-end-column="30" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <marker date="1557259786171" expanded="true" signature="11860:11862" ph="..." />
+                <marker date="1558720729324" expanded="true" signature="11235:11238" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/2xtPK.bmp">
-          <provider selected="true" editor-type-id="images" />
+        <entry file="file://$PROJECT_DIR$/palindrome">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -106,7 +106,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -118,6 +117,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -155,12 +155,12 @@
     <frame x="0" y="25" width="1920" height="998" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14194237" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14354323" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32911393" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.4315305" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4315305" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4315305" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -192,26 +192,7 @@
     <MESSAGE value="Mmmowaijdawidj" />
     <option name="LAST_COMMIT_MESSAGE" value="Mmmowaijdawidj" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/main.cpp</url>
-          <line>275</line>
-          <option name="timeStamp" value="96" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/main.cpp</url>
-          <line>276</line>
-          <option name="timeStamp" value="97" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/palindrome">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file:///usr/include/c++/7/string">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="346">
@@ -261,6 +242,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test.bmp">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eerste.bmp">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Piet_Hello_World.bmp" />
+    <entry file="file://$PROJECT_DIR$/hello.bmp" />
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -268,31 +257,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.bmp">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eerste.bmp">
+    <entry file="file://$PROJECT_DIR$/2xtPK.bmp">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/palindrome.bmp">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Piet_Hello_World.bmp">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hello.bmp">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/2xtPK.bmp">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/palindrome">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="511" column="26" selection-start-line="511" selection-start-column="26" selection-end-line="511" selection-end-column="26" />
+        <state relative-caret-position="1440">
+          <caret line="462" column="30" lean-forward="true" selection-start-line="462" selection-start-column="30" selection-end-line="462" selection-end-column="30" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-            <marker date="1557259786171" expanded="true" signature="11860:11862" ph="..." />
+            <marker date="1558720729324" expanded="true" signature="11235:11238" ph="..." />
           </folding>
         </state>
       </provider>

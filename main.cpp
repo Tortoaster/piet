@@ -38,48 +38,6 @@ struct State {
 	bool swapped = false;
 };
 
-//std::ostream& operator<<(std::ostream& os, const Color& color) {
-//	std::string a, b;
-//
-//	switch(color.lightness) {
-//		case LIGHT:
-//			a = "LIGHT ";
-//			break;
-//		case DARK:
-//			a = "DARK ";
-//			break;
-//		default:
-//			a = "";
-//	}
-//
-//	switch(color.hue) {
-//		case RED:
-//			b = "RED";
-//			break;
-//		case YELLOW:
-//			b =  "YELLOW";
-//			break;
-//		case GREEN:
-//			b = "GREEN";
-//			break;
-//		case CYAN:
-//			b = "CYAN";
-//			break;
-//		case BLUE:
-//			b = "BLUE";
-//			break;
-//		case MAGENTA:
-//			b = "MAGENTA";
-//			break;
-//		default:
-//			a = "";
-//			b = color.lightness == LIGHT ? "WHITE" : "BLACK";
-//	}
-//
-//	os << a << b;
-//	return os;
-//}
-
 bool operator==(const Position& p1, const Position& p2) {
 	return p1.x == p2.x && p1.y == p2.y;
 }
@@ -140,12 +98,15 @@ void multiply(State& state) {
 
 void divide(State& state) {
 	int b = state.stack.top();
-	state.stack.pop();
 	
-	int a = state.stack.top();
-	state.stack.pop();
-	
-	state.stack.push(a / b);
+	if(b != 0) {
+		state.stack.pop();
+		
+		int a = state.stack.top();
+		state.stack.pop();
+		
+		state.stack.push(a / b);
+	}
 }
 
 void mod(State& state) {
@@ -427,9 +388,7 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 					}
 				}
 			}
-//			std::cout << colors[x][y] << ", \t";
 		}
-//		std::cout << std::endl;
 	}
 	
 	delete[] data;
@@ -501,15 +460,17 @@ std::vector<Block> load_image(const char* image, const int codel_size) {
 }
 
 int main() {
-	const int codel_size = 8;
-	const char* filename = "/home/rick/CLionProjects/piet/2xtPK.bmp";
+	const int codel_size = 20;
+	const char* filename = "/home/rick/CLionProjects/piet/palindrome.bmp";
 	
 	std::vector<Block> blocks = load_image(filename, codel_size);
 	
 	State state = {blocks.front()};
-
-	while(state.turned < 4) {
-		next_state(state);
+	
+	if(state.current.color.hue != NONE || state.current.color.lightness != DARK) {
+		while(state.turned < 4) {
+			next_state(state);
+		}
 	}
 	
 	return 0;
