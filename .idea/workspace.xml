@@ -13,11 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="da0ffec5-ee20-4f17-8e7d-88ed4e59bb0d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/2xtPK.bmp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/piet.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/piet.dir/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/piet" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/piet" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/palindrome.bmp" beforeDir="false" afterPath="$PROJECT_DIR$/palindrome.bmp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,11 +40,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1440">
-              <caret line="462" column="30" lean-forward="true" selection-start-line="462" selection-start-column="30" selection-end-line="462" selection-end-column="30" />
+            <state relative-caret-position="525">
+              <caret line="191" column="64" selection-start-line="191" selection-start-column="64" selection-end-line="191" selection-end-column="64" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
-                <marker date="1558720729324" expanded="true" signature="11235:11238" ph="..." />
+                <marker date="1559041768842" expanded="true" signature="11810:11813" ph="..." />
               </folding>
             </state>
           </provider>
@@ -106,6 +102,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -117,7 +114,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -155,7 +151,7 @@
     <frame x="0" y="25" width="1920" height="998" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14354323" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14514408" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -250,6 +246,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Piet_Hello_World.bmp" />
     <entry file="file://$PROJECT_DIR$/hello.bmp" />
+    <entry file="file://$PROJECT_DIR$/2xtPK.bmp" />
+    <entry file="file://$PROJECT_DIR$/palindrome.bmp">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -257,22 +257,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/2xtPK.bmp">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/palindrome.bmp">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/palindrome">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1440">
-          <caret line="462" column="30" lean-forward="true" selection-start-line="462" selection-start-column="30" selection-end-line="462" selection-end-column="30" />
+        <state relative-caret-position="525">
+          <caret line="191" column="64" selection-start-line="191" selection-start-column="64" selection-end-line="191" selection-end-column="64" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
-            <marker date="1558720729324" expanded="true" signature="11235:11238" ph="..." />
+            <marker date="1559041768842" expanded="true" signature="11810:11813" ph="..." />
           </folding>
         </state>
       </provider>

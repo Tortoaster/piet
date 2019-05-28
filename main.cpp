@@ -63,10 +63,14 @@ void push(State& state) {
 }
 
 void pop(State& state) {
+	if(state.stack.empty()) return;
+	
 	state.stack.pop();
 }
 
 void add(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
@@ -77,6 +81,8 @@ void add(State& state) {
 }
 
 void subtract(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
@@ -87,6 +93,8 @@ void subtract(State& state) {
 }
 
 void multiply(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
@@ -97,6 +105,8 @@ void multiply(State& state) {
 }
 
 void divide(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	
 	if(b != 0) {
@@ -110,6 +120,8 @@ void divide(State& state) {
 }
 
 void mod(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
@@ -120,6 +132,8 @@ void mod(State& state) {
 }
 
 void nott(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
@@ -127,6 +141,8 @@ void nott(State& state) {
 }
 
 void greater(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
@@ -137,6 +153,8 @@ void greater(State& state) {
 }
 
 void pointer(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
@@ -144,6 +162,8 @@ void pointer(State& state) {
 }
 
 void switchh(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
@@ -151,6 +171,8 @@ void switchh(State& state) {
 }
 
 void duplicate(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
@@ -159,11 +181,15 @@ void duplicate(State& state) {
 }
 
 void roll(State& state) {
+	if(state.stack.size() < 2) return;
+	
 	int b = state.stack.top();
 	state.stack.pop();
 	
 	int a = state.stack.top();
 	state.stack.pop();
+	
+	if(b > state.stack.size() || a > state.stack.size()) return;
 	
 	std::stack<int> temp;
 	
@@ -202,6 +228,8 @@ void in_char(State& state) {
 }
 
 void out_number(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
@@ -209,6 +237,8 @@ void out_number(State& state) {
 }
 
 void out_char(State& state) {
+	if(state.stack.empty()) return;
+	
 	int a = state.stack.top();
 	state.stack.pop();
 	
