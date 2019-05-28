@@ -187,9 +187,13 @@ void roll(State& state) {
 	state.stack.pop();
 	
 	int a = state.stack.top();
-	state.stack.pop();
 	
-	if(b > state.stack.size() || a > state.stack.size()) return;
+	if(a > state.stack.size()) {
+		state.stack.push(b);
+		return;
+	}
+	
+	state.stack.pop();
 	
 	std::stack<int> temp;
 	
